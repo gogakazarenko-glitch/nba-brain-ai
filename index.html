@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>NBA AI Predictor 2026</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: white; text-align: center; padding: 50px; }
+        .card { background: #2d2d2d; border-radius: 15px; padding: 20px; display: inline-block; margin: 10px; border-left: 5px solid #f57c00; }
+        .prob { font-size: 2em; color: #f57c00; font-weight: bold; }
+        .reason { font-style: italic; color: #aaa; }
+    </style>
+</head>
+<body>
+    <h1>NBA AI Глубокая Аналитика (Сезон 2026)</h1>
+    <p>Обновлено: <span id="date"></span></p>
+    
+    <div id="predictions">
+        <div class="card">
+            <h3>Lakers vs Celtics</h3>
+            <div class="prob">Celtics: 62%</div>
+            <p class="reason">Фактор: Усталость Lakers (Back-to-back) + Психологический фон</p>
+        </div>
+    </div>
+
+    <script>document.getElementById('date').innerHTML = new Date().toLocaleDateString();</script>
+</body>
+</html>
