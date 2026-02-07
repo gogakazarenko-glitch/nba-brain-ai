@@ -37,8 +37,9 @@ jobs:
           git config --global user.name "NBA-AI-Bot"
           git config --global user.email "bot@github.com"
           
-          # Добавляем и модель, и обновленный сайт в репозиторий
+          # Сначала заберем изменения из облака, чтобы не было конфликта
+          git pull origin main --rebase
+          
           git add index.html nba_model_2026.pth
           
-          # Проверяем, есть ли изменения, чтобы не вызывать ошибку при пустом коммите
-          git diff --quiet && git diff --staged --quiet || (git commit -m "AI Update: Model & Forecast $(date)" && git push)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "AI Update: Model & Forecast $(date)" && git push origin main)
