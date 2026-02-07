@@ -2,13 +2,12 @@ name: Daily NBA Prediction
 
 on:
   schedule:
-    - cron: '0 15 * * *' # Запуск каждый день в 18:00 по МСК
-  workflow_dispatch: # Позволяет запустить вручную кнопкой
+    - cron: '0 15 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Даем роботу права на запись в репозиторий, чтобы он мог обновлять index.html и сохранять модель
     permissions:
       contents: write
       
@@ -27,22 +26,13 @@ jobs:
 
       - name: Train and Predict
         run: |
-          # 1. Обучаем нейронку (создаем файл nba_model_2026.pth)
           python train.py
-          # 2. Запускаем прогноз на сегодня (используем созданный файл)
           python predict_today.py
 
-     - name: Commit and Push changes
+      - name: Commit and Push changes
         run: |
           git config --global user.name "NBA-AI-Bot"
           git config --global user.email "bot@github.com"
-          
-          # Сначала добавляем все новые файлы, чтобы Git знал о них
           git add index.html nba_model_2026.pth
-          
-          # Теперь делаем pull с перебазированием. 
-          # Если есть конфликты, робот выберет СВОИ свежие данные (флаг -X theirs)
           git pull origin main --rebase -X theirs
-          
-          # И теперь со спокойной душой отправляем всё в репозиторий
-          git diff --quiet && git diff --staged --quiet || (git commit -m "AI Update: Model & Forecast $(date)" && git push origin main)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "AI Update: $(date)" && git push origin main)
