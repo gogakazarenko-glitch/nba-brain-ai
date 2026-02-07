@@ -2,26 +2,33 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>NBA AI Predictor 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA AI Insight - Прогнозы 2026</title>
     <style>
-        body { font-family: sans-serif; background: #1a1a1a; color: white; text-align: center; padding: 50px; }
-        .card { background: #2d2d2d; border-radius: 15px; padding: 20px; display: inline-block; margin: 10px; border-left: 5px solid #f57c00; }
-        .prob { font-size: 2em; color: #f57c00; font-weight: bold; }
-        .reason { font-style: italic; color: #aaa; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f0f0f; color: #e0e0e0; margin: 0; padding: 20px; }
+        header { border-bottom: 2px solid #f57c00; padding-bottom: 20px; margin-bottom: 30px; text-align: center; }
+        h1 { color: #f57c00; text-transform: uppercase; letter-spacing: 2px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        .card { background: #1e1e1e; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border: 1px solid #333; }
+        .teams { font-size: 1.4em; font-weight: bold; margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .vs { color: #f57c00; font-size: 0.8em; }
+        .prediction-bar { background: #333; height: 10px; border-radius: 5px; margin: 15px 0; overflow: hidden; display: flex; }
+        .bar-home { background: #f57c00; height: 100%; }
+        .stats-box { font-size: 0.9em; background: #252525; padding: 10px; border-radius: 5px; margin-top: 10px; }
+        .badge { background: #444; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; color: #f57c00; }
     </style>
 </head>
 <body>
-    <h1>NBA AI Глубокая Аналитика (Сезон 2026)</h1>
-    <p>Обновлено: <span id="date"></span></p>
-    
-    <div id="predictions">
-        <div class="card">
-            <h3>Lakers vs Celtics</h3>
-            <div class="prob">Celtics: 62%</div>
-            <p class="reason">Фактор: Усталость Lakers (Back-to-back) + Психологический фон</p>
-        </div>
-    </div>
+    <header>
+        <h1>NBA AI Predictor 2026</h1>
+        <p>Глубокий анализ: Антропометрия • Усталость • Психология</p>
+    </header>
 
-    <script>document.getElementById('date').innerHTML = new Date().toLocaleDateString();</script>
+    <div class="grid" id="prediction-grid">
+        </div>
+
+    <footer style="margin-top: 50px; opacity: 0.5; text-align: center;">
+        <p>Данные обновляются автоматически через GitHub Actions</p>
+    </footer>
 </body>
 </html>
