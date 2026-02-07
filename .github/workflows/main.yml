@@ -2,31 +2,37 @@ name: Daily NBA Prediction
 
 on:
   schedule:
-    - cron: '0 15 * * *' # Запуск каждый день в 18:00 по МСК
-  workflow_dispatch: # Позволяет запустить вручную кнопкой
+    - cron: '0 15 * * *' # 18:00 по МСК
+  workflow_dispatch: # Чтобы ты мог нажать кнопку "Run workflow" и проверить прямо сейчас
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Даем роботу права на запись в репозиторий
+    permissions:
+      contents: write
+      
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3 # Обновили до v3 (более стабильная)
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
       - name: Install dependencies
-        run: pip install torch pandas nba_api beautifulsoup4
+        run: |
+          pip install torch pandas nba_api beautifulsoup4 numpy
 
-      - name: Run Prediction
-        run: python predict_today.py > result.txt # Запускаем нейронку
+      - name: Run AI Prediction
+        # Запускаем скрипт, который прогонит все игры и обновит index.html
+        run: python predict_today.py
 
-      - name: Deploy to GitHub Pages
-        # Здесь будет скрипт, который обновит index.html данными из result.txt
+      - name: Commit and Push changes
         run: |
           git config --global user.name "NBA-AI-Bot"
-          git add .
-          git commit -m "Автоматический прогноз на сегодня"
-          git push
+          git config --global user.email "bot@github.com"
+          git add index.html
+          # Проверка: если изменений нет (например, матчей сегодня нет), робот не упадет с ошибкой
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Автоматический прогноз на $(date)" && git push)
