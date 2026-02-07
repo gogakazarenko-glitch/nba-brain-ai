@@ -2,19 +2,19 @@ name: Daily NBA Prediction
 
 on:
   schedule:
-    - cron: '0 15 * * *' # 18:00 по МСК
-  workflow_dispatch: # Чтобы ты мог нажать кнопку "Run workflow" и проверить прямо сейчас
+    - cron: '0 15 * * *' # Запуск каждый день в 18:00 по МСК
+  workflow_dispatch: # Позволяет запустить вручную кнопкой
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Даем роботу права на запись в репозиторий
+    # Даем роботу права на запись в репозиторий, чтобы он мог обновлять index.html и сохранять модель
     permissions:
       contents: write
       
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3 # Обновили до v3 (более стабильная)
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -25,14 +25,20 @@ jobs:
         run: |
           pip install torch pandas nba_api beautifulsoup4 numpy
 
-      - name: Run AI Prediction
-        # Запускаем скрипт, который прогонит все игры и обновит index.html
-        run: python predict_today.py
+      - name: Train and Predict
+        run: |
+          # 1. Обучаем нейронку (создаем файл nba_model_2026.pth)
+          python train.py
+          # 2. Запускаем прогноз на сегодня (используем созданный файл)
+          python predict_today.py
 
       - name: Commit and Push changes
         run: |
           git config --global user.name "NBA-AI-Bot"
           git config --global user.email "bot@github.com"
-          git add index.html
-          # Проверка: если изменений нет (например, матчей сегодня нет), робот не упадет с ошибкой
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Автоматический прогноз на $(date)" && git push)
+          
+          # Добавляем и модель, и обновленный сайт в репозиторий
+          git add index.html nba_model_2026.pth
+          
+          # Проверяем, есть ли изменения, чтобы не вызывать ошибку при пустом коммите
+          git diff --quiet && git diff --staged --quiet || (git commit -m "AI Update: Model & Forecast $(date)" && git push)
