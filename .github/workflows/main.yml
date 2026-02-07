@@ -32,14 +32,17 @@ jobs:
           # 2. Запускаем прогноз на сегодня (используем созданный файл)
           python predict_today.py
 
-      - name: Commit and Push changes
+     - name: Commit and Push changes
         run: |
           git config --global user.name "NBA-AI-Bot"
           git config --global user.email "bot@github.com"
           
-          # Сначала заберем изменения из облака, чтобы не было конфликта
-          git pull origin main --rebase
-          
+          # Сначала добавляем все новые файлы, чтобы Git знал о них
           git add index.html nba_model_2026.pth
           
+          # Теперь делаем pull с перебазированием. 
+          # Если есть конфликты, робот выберет СВОИ свежие данные (флаг -X theirs)
+          git pull origin main --rebase -X theirs
+          
+          # И теперь со спокойной душой отправляем всё в репозиторий
           git diff --quiet && git diff --staged --quiet || (git commit -m "AI Update: Model & Forecast $(date)" && git push origin main)
