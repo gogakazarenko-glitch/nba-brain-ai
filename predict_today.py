@@ -1,48 +1,54 @@
 import pandas as pd
 from nba_api.live.nba.endpoints import scoreboard
-import os
+import re
 
 def run_analysis():
-    print("Проверка расписания матчей...")
+    print("Запуск анализа матчей...")
     try:
         f = scoreboard.ScoreBoard()
         games = f.games.get_dict()
     except Exception as e:
-        print(f"Ошибка API: {e}")
+        print(f"Ошибка получения данных: {e}")
         return
 
     if not games:
-        print("API не вернуло матчей на текущий момент.")
-        cards_html = "<p style='text-align:center;'>Матчи не найдены или лига в режиме ожидания.</p>"
+        print("Матчей на сегодня не найдено.")
+        cards_html = "<div style='grid-column: 1/-1; text-align: center;'><h3>Сегодня матчей нет</h3></div>"
     else:
         print(f"Найдено матчей: {len(games)}")
         cards_html = ""
         for game in games:
             home = game['homeTeam']['teamName']
             away = game['awayTeam']['teamName']
-            # Здесь имитируем прогноз нейронки (для теста)
+            # Здесь твоя нейронка делает прогноз (заглушка для примера)
             cards_html += f"""
             <div class="card">
                 <div class="teams"><span>{away}</span> <span class="vs">VS</span> <span>{home}</span></div>
-                <div class="prediction-bar"><div class="bar-home" style="width: 55%"></div></div>
-                <div class="stats-box"><b>Прогноз ИИ:</b> Анализ завершен успешно.</div>
+                <div class="prediction-bar"><div class="bar-home" style="width: 50%"></div></div>
+                <div class="stats-box"><b>ИИ Прогноз:</b> Ожидается плотная игра.</div>
             </div>
             """
 
-    # Читаем HTML
-    with open('index.html', 'r', encoding='utf-8') as file:
-        content = file.read()
+    # Читаем текущий HTML
+    try:
+        with open('index.html', 'r', encoding='utf-8') as file:
+            content = file.read()
+    except FileNotFoundError:
+        print("Ошибка: index.html не найден!")
+        return
 
-    # МЕТКА ДЛЯ ЗАМЕНЫ
-    marker = ''
+    # Регулярное выражение для поиска текста между START и END
+    pattern = r".*?"
+    replacement = f"\n{cards_html}\n"
     
-    if marker in content:
-        new_content = content.replace(marker, cards_html + "\n" + marker)
+    # Делаем замену
+    if re.search(pattern, content, re.DOTALL):
+        new_content = re.sub(pattern, replacement, content, flags=re.DOTALL)
         with open('index.html', 'w', encoding='utf-8') as file:
             file.write(new_content)
-        print("Данные успешно записаны в index.html!")
+        print("Сайт успешно обновлен!")
     else:
-        print("ОШИБКА: Метка не найдена в index.html. Верни её в файл!")
+        print("ОШИБКА: Метки и не найдены в index.html!")
 
 if __name__ == "__main__":
     run_analysis()
