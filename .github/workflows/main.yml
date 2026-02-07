@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Загружаем всю историю, чтобы pull работал корректно
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -26,6 +28,7 @@ jobs:
 
       - name: Train and Predict
         run: |
+          # Сначала тренируем и предсказываем
           python train.py
           python predict_today.py
 
@@ -33,6 +36,13 @@ jobs:
         run: |
           git config --global user.name "NBA-AI-Bot"
           git config --global user.email "bot@github.com"
+          
+          # Вместо сложного pull, просто забираем актуальное состояние
           git add index.html nba_model_2026.pth
-          git pull origin main --rebase -X theirs
+          
+          # Если есть изменения в облаке, этот шаг их подтянет БЕЗ конфликта с индексом
+          git stash # Временно прячем наши новые файлы
+          git pull origin main --rebase
+          git stash pop # Возвращаем их обратно
+          
           git diff --quiet && git diff --staged --quiet || (git commit -m "AI Update: $(date)" && git push origin main)
