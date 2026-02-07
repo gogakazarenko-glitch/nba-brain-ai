@@ -37,12 +37,24 @@ jobs:
           git config --global user.name "NBA-AI-Bot"
           git config --global user.email "bot@github.com"
           
-          # Вместо сложного pull, просто забираем актуальное состояние
+          # 1. Прячем результаты работы нейронки
+          git add .
+          git stash
+          
+          # 2. Обновляемся из облака
+          git pull origin main --rebase
+          
+          # 3. Достаем результаты нейронки обратно
+          git stash pop || echo "No changes to pop"
+          
+          # 4. Финальный аккорд: добавляем всё заново и пушим
           git add index.html nba_model_2026.pth
           
-          # Если есть изменения в облаке, этот шаг их подтянет БЕЗ конфликта с индексом
-          git stash # Временно прячем наши новые файлы
-          git pull origin main --rebase
-          git stash pop # Возвращаем их обратно
-          
-          git diff --quiet && git diff --staged --quiet || (git commit -m "AI Update: $(date)" && git push origin main)
+          # Делаем коммит только если файлы реально изменились
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "AI Prediction Update: $(date)"
+            git push origin main
+          else
+            echo "No changes to commit"
+          fi
+
